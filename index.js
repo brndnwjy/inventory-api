@@ -13,6 +13,7 @@ const cors = require("cors");
 const xss = require("xss-clean");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const path = require("path");
 
 // parser
 app.use(bp.json());
@@ -32,6 +33,8 @@ app.use(morgan("dev"));
 
 // route
 app.use("/v1", main);
+
+app.use("/img", express.static(path.join(__dirname, "/uploads")));
 
 app.all("*", (req, res, next) => {
   next(
