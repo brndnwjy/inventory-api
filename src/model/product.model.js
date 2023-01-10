@@ -19,6 +19,14 @@ const productModel = {
       ]
     );
   },
+
+  getAll: () => {
+    return pool.query("SELECT * FROM product");
+  },
+
+  getDetail: (id) => {
+    return pool.query(`SELECT * FROM product WHERE product_id = $1`, [id]);
+  },
 };
 
 module.exports = productModel;

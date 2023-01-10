@@ -6,7 +6,7 @@ const createError = require("http-errors");
 const productController = {
   insert: async (req, res, next) => {
     try {
-      // prepare category data
+      // prepare product data
       const id = uuid();
       const { cid, title, description, stock } = req.body;
       let photo = null;
@@ -27,12 +27,67 @@ const productController = {
         date,
       };
 
-      // insert new category
+      // insert new product
       await productModel.insert(data);
 
       res.json({
         message: "insert product success",
         product: data,
+      });
+    } catch {
+      next(createError(500, "internal server error"));
+    }
+  },
+
+  getAll: async (req, res, next) => {
+    try {
+      // request to database
+      const result = await productModel.getAll();
+
+      // data validation
+      const check = result.rowCount;
+
+      if (!check) {
+        return res.send({
+          message: "no product recorded",
+        });
+      }
+
+      // get product data
+      const product = result.rows;
+
+      res.send({
+        message: "get all product success",
+        product,
+      });
+    } catch {
+      next(createError(500, "internal server error"));
+    }
+  },
+
+  getDetail: async (req, res, next) => {
+    try {
+      // get parameter
+      const { id } = req.params;
+
+      // request to database
+      const result = await productModel.getDetail(id);
+
+      // data validation
+      const check = result.rowCount;
+
+      if (!check) {
+        return res.send({
+          message: "no product recorded with corresponding id",
+        });
+      }
+
+      // get product data
+      const product = result.rows[0];
+
+      res.send({
+        message: "get product detail success",
+        product,
       });
     } catch {
       next(createError(500, "internal server error"));
