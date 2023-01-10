@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { insert } = require("../controller/category.controller");
+const { insert, getAll, getDetail } = require("../controller/category.controller");
 
-router.post("/", insert);
+router
+.post("/", insert)
+.get("/", getAll)
+.get("/:id", getDetail)
 
 module.exports = router;

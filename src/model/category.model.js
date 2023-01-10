@@ -10,6 +10,14 @@ const categoryModel = {
       [data.id, data.title, data.date]
     );
   },
+
+  getAll: () => {
+    return pool.query("SELECT * FROM category");
+  },
+
+  getDetail: (id) => {
+    return pool.query(`SELECT * FROM category WHERE category_id = $1`, [id]);
+  },
 };
 
 module.exports = categoryModel;
