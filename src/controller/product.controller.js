@@ -93,6 +93,66 @@ const productController = {
       next(createError(500, "internal server error"));
     }
   },
+
+  update: async (req, res, next) => {
+    try {
+      // get parameter
+      const { id } = req.params;
+
+      // request to database
+      const result = await productModel.getDetail(id);
+
+      // data validation
+      const check = result.rowCount;
+
+      if (!check) {
+        return res.send({
+          message: "no product recorded with corresponding id",
+        });
+      }
+
+      // get old product data
+      const oldProduct = result.rows[0];
+
+      // prepare update data
+      const { cid, title, description, stock } = req.body;
+      let photo;
+      const date = new Date();
+
+      let data = {
+        id,
+        cid,
+        title,
+        description,
+        stock,
+        date,
+        photo,
+      };
+
+      if (req.file) {
+        data = {
+          ...data,
+          photo: `http://${req.get("host")}/img/${req.file.filename}`,
+        };
+      }
+
+      // update product
+      await productModel.update(data);
+
+      // get product data after update
+      const {
+        rows: [newProduct],
+      } = await productModel.getDetail(id);
+
+      res.send({
+        message: "update product success",
+        old: oldProduct,
+        new: newProduct,
+      });
+    } catch {
+      next(createError(500, "internal server error"));
+    }
+  },
 };
 
 module.exports = productController;

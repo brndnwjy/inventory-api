@@ -27,6 +27,30 @@ const productModel = {
   getDetail: (id) => {
     return pool.query(`SELECT * FROM product WHERE product_id = $1`, [id]);
   },
+
+  update: (data) => {
+    return pool.query(
+      `
+    UPDATE product SET
+    category_id = COALESCE($1, category_id),
+    product_title = COALESCE($2, product_title),
+    description = COALESCE($3, description),
+    stock = COALESCE($4, stock),
+    photo = COALESCE($5, photo),
+    updated_at = COALESCE($6, updated_at)
+    WHERE product_id = $7
+    `,
+      [
+        data.cid,
+        data.title,
+        data.description,
+        data.stock,
+        data.photo,
+        data.date,
+        data.id,
+      ]
+    );
+  },
 };
 
 module.exports = productModel;
