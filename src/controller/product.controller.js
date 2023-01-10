@@ -153,6 +153,38 @@ const productController = {
       next(createError(500, "internal server error"));
     }
   },
+
+  remove: async (req, res, next) => {
+    try {
+      // get parameter
+      const { id } = req.params;
+
+      // request to database
+      const result = await productModel.getDetail(id);
+
+      // data validation
+      const check = result.rowCount;
+
+      if (!check) {
+        return res.send({
+          message: "no product recorded with corresponding id",
+        });
+      }
+
+      // get old product data
+      const product = result.rows[0];
+
+      // remove product
+      await productModel.remove(id);
+
+      res.send({
+        message: "remove product success",
+        product,
+      });
+    } catch {
+      next(createError(500, "internal server error"));
+    }
+  },
 };
 
 module.exports = productController;
