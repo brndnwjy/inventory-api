@@ -30,6 +30,10 @@ const categoryModel = {
       [data.title, data.date, data.id]
     );
   },
+
+  remove: (id) => {
+    return pool.query("DELETE FROM category WHERE category_id = $1", [id]);
+  },
 };
 
 module.exports = categoryModel;
