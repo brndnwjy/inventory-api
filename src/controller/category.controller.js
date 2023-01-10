@@ -83,6 +83,54 @@ const categoryController = {
       next(createError(500, "internal server error"));
     }
   },
+
+  update: async (req, res, next) => {
+    try {
+      // get parameter
+      const { id } = req.params;
+
+      // request to database
+      const result = await categoryModel.getDetail(id);
+
+      // data validation
+      const check = result.rowCount;
+
+      if (!check) {
+        return res.send({
+          message: "no category recorded with corresponding id",
+        });
+      }
+
+      // get old category data
+      const oldCategory = result.rows[0];
+
+      // prepare update data
+      const { title } = req.body;
+      const date = new Date();
+
+      const data = {
+        id,
+        title,
+        date,
+      };
+
+      // update category
+      await categoryModel.update(data);
+
+      // get category data after update
+      const {
+        rows: [newCategory],
+      } = await categoryModel.getDetail(id);
+
+      res.send({
+        message: "update category success",
+        old: oldCategory,
+        new: newCategory,
+      });
+    } catch {
+      next(createError(500, "internal server error"));
+    }
+  },
 };
 
 module.exports = categoryController;
