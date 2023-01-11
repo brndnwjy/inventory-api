@@ -8,13 +8,14 @@ const {
   update,
   remove,
 } = require("../controller/product.controller");
+const verifyToken = require("../middleware/auth");
 const upload = require("../middleware/multer");
 
 router
-  .post("/", upload.single("photo"), insert)
+  .post("/", verifyToken, upload.single("photo"), insert)
   .get("/", getAll)
   .get("/:id", getDetail)
-  .put("/:id", upload.single("photo"), update)
-  .delete("/:id", remove);
+  .put("/:id", verifyToken, upload.single("photo"), update)
+  .delete("/:id", verifyToken, remove);
 
 module.exports = router;
