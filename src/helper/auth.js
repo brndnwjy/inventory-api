@@ -9,4 +9,13 @@ const generateToken = (payload) => {
   return token;
 };
 
-module.exports = { generateToken };
+const generateRefreshToken = (payload) => {
+  const config = {
+    expiresIn: "24h",
+  };
+  const token = jwt.sign(payload, process.env.JWT_REFRESH_KEY, config);
+
+  return token;
+};
+
+module.exports = { generateToken, generateRefreshToken };

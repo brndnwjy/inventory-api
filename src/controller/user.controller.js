@@ -2,8 +2,9 @@ const userModel = require("../model/user.model");
 
 const { v4: uuid } = require("uuid");
 const { hash, compare } = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
-const { generateToken } = require("../helper/auth");
+const { generateToken, generateRefreshToken } = require("../helper/auth");
 
 const userController = {
   register: async (req, res, next) => {
@@ -71,11 +72,14 @@ const userController = {
       }
 
       // generate token
-      const token = generateToken({
+      const payload = {
         id: user.user_id,
         name: user.fullname,
         email: user.email,
-      });
+      };
+
+      const token = generateToken(payload);
+      const refreshToken = generateRefreshToken(payload);
 
       delete user.password;
 
@@ -83,10 +87,30 @@ const userController = {
         message: "login success",
         user,
         token,
+        refreshToken,
       });
     } catch (err) {
       next(createError(500, "internal server error"));
     }
+  },
+
+  refreshToken: (req, res, next) => {
+    const { refreshToken } = req.body;
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+
+    const payload = {
+      id: decoded.id,
+      name: decoded.name,
+      email: decoded.email,
+    };
+
+    const newToken = generateToken(payload);
+    const newRefreshToken = generateRefreshToken(payload);
+
+    res.send({
+      message: "token refresh success",
+      data: { token: newToken, refreshToken: newRefreshToken },
+    });
   },
 };
 
