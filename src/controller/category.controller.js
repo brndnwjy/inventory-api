@@ -2,13 +2,25 @@ const categoryModel = require("../model/category.model");
 
 const { v4: uuid } = require("uuid");
 const createError = require("http-errors");
+const { categorySchema } = require("../helper/schema");
 
 const categoryController = {
   insert: async (req, res, next) => {
     try {
+      // get user input
+      const { title } = req.body;
+
+      // validate input
+      const value = categorySchema.validate(title);
+
+      if (value.error) {
+        const error = value.error.details[0];
+
+        return next(createError(400, error.message));
+      }
+
       // prepare category data
       const id = uuid();
-      const { title } = req.body;
       const date = new Date();
 
       const data = {
@@ -24,7 +36,8 @@ const categoryController = {
         message: "insert product success",
         category: data,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
@@ -50,7 +63,8 @@ const categoryController = {
         message: "get all category success",
         category,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
@@ -79,7 +93,8 @@ const categoryController = {
         message: "get category detail success",
         category,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
@@ -127,7 +142,8 @@ const categoryController = {
         old: oldCategory,
         new: newCategory,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
@@ -159,7 +175,8 @@ const categoryController = {
         message: "remove category success",
         category,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
