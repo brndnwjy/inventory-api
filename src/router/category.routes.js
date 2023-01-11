@@ -8,12 +8,13 @@ const {
   update,
   remove,
 } = require("../controller/category.controller");
+const verifyToken = require("../middleware/auth");
 
 router
-  .post("/", insert)
+  .post("/", verifyToken, insert)
   .get("/", getAll)
   .get("/:id", getDetail)
-  .put("/:id", update)
-  .delete("/:id", remove);
+  .put("/:id", verifyToken, update)
+  .delete("/:id", verifyToken, remove);
 
 module.exports = router;

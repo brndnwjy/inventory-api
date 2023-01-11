@@ -2,13 +2,25 @@ const productModel = require("../model/product.model");
 
 const { v4: uuid } = require("uuid");
 const createError = require("http-errors");
+const { productSchema } = require("../helper/schema");
 
 const productController = {
   insert: async (req, res, next) => {
     try {
+      // get user input
+      const { cid, title, description, stock } = req.body;
+
+      // validate input
+      const value = productSchema.validate({ cid, title, description, stock });
+
+      if (value.error) {
+        const error = value.error.details[0];
+
+        return next(createError(400, error));
+      }
+
       // prepare product data
       const id = uuid();
-      const { cid, title, description, stock } = req.body;
       let photo = null;
       const date = new Date();
 
@@ -34,7 +46,8 @@ const productController = {
         message: "insert product success",
         product: data,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
@@ -89,7 +102,8 @@ const productController = {
         message: "get product detail success",
         product,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
@@ -149,7 +163,8 @@ const productController = {
         old: oldProduct,
         new: newProduct,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
@@ -181,7 +196,8 @@ const productController = {
         message: "remove product success",
         product,
       });
-    } catch {
+    } catch (err) {
+      console.log(err.message);
       next(createError(500, "internal server error"));
     }
   },
